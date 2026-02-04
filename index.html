@@ -5,278 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accordion Team Directory</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #1f242f;
-            min-height: 100vh;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .header .logo {
-            max-width: 350px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-
-        .header p {
-            color: #EEFb87;
-            font-size: 1.4rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-
-        .team-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            max-width: 1400px;
-            width: 100%;
-            align-items: center;
-        }
-
-        .team-card {
-            background: linear-gradient(145deg, #2a303d 0%, #1a1f28 100%);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            width: 100%;
-            max-width: 1300px;
-        }
-
-        .team-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .card-content {
-            display: flex;
-            align-items: stretch;
-            padding: 50px;
-            gap: 50px;
-        }
-
-        .photo-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .photo {
-            width: 480px;
-            height: 480px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 6px solid #EEFb87;
-            box-shadow: 0 10px 40px rgba(238, 251, 135, 0.2);
-            margin-bottom: 25px;
-        }
-
-        .name {
-            color: #ffffff;
-            font-size: 2.4rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .title {
-            color: #EEFb87;
-            font-size: 1.3rem;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .info-columns {
-            display: flex;
-            flex: 1;
-            gap: 40px;
-        }
-
-        .section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section-label {
-            color: #EEFb87;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-label::before {
-            content: '';
-            display: inline-block;
-            width: 25px;
-            height: 2px;
-            background: #EEFb87;
-        }
-
-        .section-content {
-            color: #e5e7eb;
-            font-size: 1.05rem;
-            line-height: 1.8;
-            flex: 1;
-        }
-
-        .section-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .section-content li {
-            padding-left: 22px;
-            position: relative;
-            margin-bottom: 14px;
-        }
-
-        .section-content li::before {
-            content: '>';
-            position: absolute;
-            left: 0;
-            color: #EEFb87;
-            font-weight: bold;
-        }
-
-        .noteworthy-section .section-content {
-            background: rgba(238, 251, 135, 0.05);
-            border-left: 3px solid #EEFb87;
-            padding: 25px;
-            border-radius: 0 12px 12px 0;
-        }
-
-        /* Slideshow mode styles */
-        .slideshow-mode .team-grid {
-            display: flex;
-        }
-
-        .slideshow-mode .team-card {
-            display: none;
-        }
-
-        .slideshow-mode .team-card.active {
-            display: block;
-        }
-
-        .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
-            z-index: 100;
-            opacity: 0.4;
-            transition: opacity 0.3s ease;
-        }
-
-        .controls:hover {
-            opacity: 1;
-        }
-
-        .control-link {
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-        }
-
-        .control-link:hover {
-            color: #EEFb87;
-        }
-
-        /* Progress bar */
-        .progress-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: 100;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: #EEFb87;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        /* Card counter */
-        .card-counter {
-            position: fixed;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        @media (max-width: 1200px) {
-            .card-content {
-                flex-direction: column;
-                align-items: center;
-                padding: 40px;
-            }
-
-            .photo {
-                width: 300px;
-                height: 300px;
-            }
-
-            .info-columns {
-                flex-direction: column;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 20px;
-            }
-
-            .photo {
-                width: 220px;
-                height: 220px;
-            }
-
-            .name {
-                font-size: 1.8rem;
-            }
-
-            .card-content {
-                padding: 30px;
-                gap: 30px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #1f242f; min-height: 100vh; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        .header { text-align: center; margin-bottom: 50px; }
+        .header .logo { max-width: 350px; height: auto; margin-bottom: 20px; }
+        .header p { color: #EEFb87; font-size: 1.4rem; font-weight: 500; letter-spacing: 1px; }
+        .team-grid { display: flex; flex-direction: column; gap: 40px; max-width: 1400px; width: 100%; align-items: center; }
+        .team-card { background: linear-gradient(145deg, #2a303d 0%, #1a1f28 100%); border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; width: 100%; max-width: 1300px; }
+        .team-card:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        .card-content { display: flex; align-items: stretch; padding: 50px; gap: 50px; }
+        .photo-column { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+        .photo { width: 480px; height: 480px; border-radius: 50%; object-fit: cover; border: 6px solid #EEFb87; box-shadow: 0 10px 40px rgba(238, 251, 135, 0.2); margin-bottom: 25px; }
+        .name { color: #ffffff; font-size: 2.4rem; font-weight: 700; text-align: center; margin-bottom: 8px; }
+        .title { color: #EEFb87; font-size: 1.3rem; font-weight: 500; text-align: center; }
+        .info-columns { display: flex; flex: 1; gap: 40px; }
+        .section { flex: 1; display: flex; flex-direction: column; }
+        .section-label { color: #EEFb87; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .section-label::before { content: ''; display: inline-block; width: 25px; height: 2px; background: #EEFb87; }
+        .section-content { color: #e5e7eb; font-size: 1.05rem; line-height: 1.8; flex: 1; }
+        .section-content ul { list-style: none; padding: 0; }
+        .section-content li { padding-left: 22px; position: relative; margin-bottom: 14px; }
+        .section-content li::before { content: '>'; position: absolute; left: 0; color: #EEFb87; font-weight: bold; }
+        .noteworthy-section .section-content { background: rgba(238, 251, 135, 0.05); border-left: 3px solid #EEFb87; padding: 25px; border-radius: 0 12px 12px 0; }
+        .slideshow-mode .team-grid { display: flex; }
+        .slideshow-mode .team-card { display: none; }
+        .slideshow-mode .team-card.active { display: block; }
+        .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 100; opacity: 0.4; transition: opacity 0.3s ease; }
+        .controls:hover { opacity: 1; }
+        .control-link { color: rgba(255, 255, 255, 0.5); text-decoration: none; font-size: 0.85rem; cursor: pointer; transition: color 0.3s ease; font-weight: 400; letter-spacing: 0.5px; }
+        .control-link:hover { color: #EEFb87; }
+        .progress-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); z-index: 100; }
+        .progress-bar { height: 100%; background: #EEFb87; width: 0%; transition: width 0.1s linear; }
+        .card-counter { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; letter-spacing: 1px; }
+        @media (max-width: 1200px) { .card-content { flex-direction: column; align-items: center; padding: 40px; } .photo { width: 300px; height: 300px; } .info-columns { flex-direction: column; width: 100%; } }
+        @media (max-width: 768px) { body { padding: 20px; } .photo { width: 220px; height: 220px; } .name { font-size: 1.8rem; } .card-content { padding: 30px; gap: 30px; } }
     </style>
 </head>
 <body>
@@ -284,10 +46,8 @@
         <img src="logo-white.png" alt="Accordion" class="logo">
         <p>New York Office Team Directory</p>
     </div>
-
     <div class="team-grid">
 
-        <!-- Card 1: Victoria Adams -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -316,7 +76,6 @@
             </div>
         </div>
 
-        <!-- Card 2: Eric Adornetto -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -345,7 +104,6 @@
             </div>
         </div>
 
-        <!-- Card 3: Shaharyar Ahmed -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -374,7 +132,6 @@
             </div>
         </div>
 
-        <!-- Card 4: Sarah Anderson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -403,7 +160,6 @@
             </div>
         </div>
 
-        <!-- Card 5: Tyler Anderson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -432,7 +188,6 @@
             </div>
         </div>
 
-        <!-- Card 6: Jon Apter -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -463,11 +218,10 @@
             </div>
         </div>
 
-        <!-- Card 7: Jimelle Aquino -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Jimelle-Aquino.webp" alt="Jimelle Aquino" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2025/11/Aquino_Jimelle_ACCORDION_BlackAndWhite_630x500.png.webp" alt="Jimelle Aquino" class="photo">
                     <div class="name">Jimelle Aquino</div>
                     <div class="title">Director</div>
                 </div>
@@ -476,7 +230,9 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Team player</li>
+                                <li>Passionate traveler (top 3: Morocco, Thailand, Costa Rica)</li>
+                                <li>Enjoys watching Formula 1</li>
+                                <li>Bought rowing machine without ever having rowed</li>
                             </ul>
                         </div>
                     </div>
@@ -484,7 +240,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Strong project management skills</li>
+                                <li>CPA licensed in New York</li>
                             </ul>
                         </div>
                     </div>
@@ -492,7 +248,6 @@
             </div>
         </div>
 
-        <!-- Card 8: Magda Assenov -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -525,7 +280,34 @@
             </div>
         </div>
 
-        <!-- Card 9: Kyle Baratta -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2022/03/Paul-Atkins-2024.png.webp" alt="Paul Atkins" class="photo">
+                    <div class="name">Paul Atkins</div>
+                    <div class="title">Executive Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -554,7 +336,6 @@
             </div>
         </div>
 
-        <!-- Card 10: Aaron Bass -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -583,11 +364,10 @@
             </div>
         </div>
 
-        <!-- Card 11: Claudia Bellanca -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Claudia-Bellanca.webp" alt="Claudia Bellanca" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2020/10/Claudia-Bellanca-2024.png.webp" alt="Claudia Bellanca" class="photo">
                     <div class="name">Claudia Bellanca</div>
                     <div class="title">Marketing Director</div>
                 </div>
@@ -596,7 +376,8 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Creative marketing professional</li>
+                                <li>Cooking and dining enthusiast</li>
+                                <li>Loves to play tennis and ski</li>
                             </ul>
                         </div>
                     </div>
@@ -604,7 +385,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Leads brand and marketing initiatives</li>
+                                <li>Led John Varvatos' largest Pride marketing initiative for Stonewall's 50-year Anniversary</li>
                             </ul>
                         </div>
                     </div>
@@ -612,7 +393,6 @@
             </div>
         </div>
 
-        <!-- Card 12: Lucas Bennett -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -641,7 +421,6 @@
             </div>
         </div>
 
-        <!-- Card 13: Reagan Berry -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -670,7 +449,6 @@
             </div>
         </div>
 
-        <!-- Card 14: Alex Bogopolsky -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -703,7 +481,6 @@
             </div>
         </div>
 
-        <!-- Card 15: Courtney Bowerman -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -734,7 +511,6 @@
             </div>
         </div>
 
-        <!-- Card 16: Nathan Brooks -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -763,7 +539,6 @@
             </div>
         </div>
 
-        <!-- Card 17: Michael Brown -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -792,7 +567,6 @@
             </div>
         </div>
 
-        <!-- Card 18: Stephanie Brown -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -821,7 +595,6 @@
             </div>
         </div>
 
-        <!-- Card 19: Jared Caplan -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -850,11 +623,38 @@
             </div>
         </div>
 
-        <!-- Card 20: Gemma Carter -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Gemma-Carter.webp" alt="Gemma Carter" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2019/09/Kyle-Carmody-2024.png.webp" alt="Kyle Carmody" class="photo">
+                    <div class="name">Kyle Carmody</div>
+                    <div class="title">Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2020/02/Gemma-Carter-2024.png.webp" alt="Gemma Carter" class="photo">
                     <div class="name">Gemma Carter</div>
                     <div class="title">Executive Assistant</div>
                 </div>
@@ -863,7 +663,7 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Keeps the office running smoothly</li>
+                                <li>Has lived in 3 different countries: North America, Iceland, and England</li>
                             </ul>
                         </div>
                     </div>
@@ -871,7 +671,9 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Expert in executive support</li>
+                                <li>Studied with the Royal Ballet from age 3-16</li>
+                                <li>NVQ in Early Childhood Development</li>
+                                <li>Obtaining TAP Travel Certification</li>
                             </ul>
                         </div>
                     </div>
@@ -879,7 +681,6 @@
             </div>
         </div>
 
-        <!-- Card 21: Ashley Casale -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -908,7 +709,6 @@
             </div>
         </div>
 
-        <!-- Card 22: Sohan Chainani -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -937,7 +737,6 @@
             </div>
         </div>
 
-        <!-- Card 23: Lisa Chang -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -966,7 +765,6 @@
             </div>
         </div>
 
-        <!-- Card 24: Zoe Chang -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -995,7 +793,6 @@
             </div>
         </div>
 
-        <!-- Card 25: Amanda Chen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1024,7 +821,6 @@
             </div>
         </div>
 
-        <!-- Card 26: Jason Chen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1053,7 +849,6 @@
             </div>
         </div>
 
-        <!-- Card 27: Ryan Chen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1082,7 +877,6 @@
             </div>
         </div>
 
-        <!-- Card 28: Sophia Chen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1111,7 +905,6 @@
             </div>
         </div>
 
-        <!-- Card 29: Michael Chou -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1140,7 +933,6 @@
             </div>
         </div>
 
-        <!-- Card 30: William Clark -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1169,20 +961,19 @@
             </div>
         </div>
 
-        <!-- Card 31: James Clous -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2024/09/james-clous-bw.webp" alt="James Clous" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2025/11/Clous_James_ACCORDION_BlackAndWhite_630x500.png.webp" alt="James Clous" class="photo">
                     <div class="name">James Clous</div>
-                    <div class="title">Associate</div>
+                    <div class="title">Senior Director</div>
                 </div>
                 <div class="info-columns">
                     <div class="section">
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Enjoys running and fitness</li>
+                                <li>Information not available</li>
                             </ul>
                         </div>
                     </div>
@@ -1190,7 +981,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Background in finance and accounting</li>
+                                <li>Information not available</li>
                             </ul>
                         </div>
                     </div>
@@ -1198,7 +989,6 @@
             </div>
         </div>
 
-        <!-- Card 32: Herb Cohen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1229,7 +1019,6 @@
             </div>
         </div>
 
-        <!-- Card 33: Brittany Collins -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1258,7 +1047,6 @@
             </div>
         </div>
 
-        <!-- Card 34: Ben Cooper -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1287,7 +1075,6 @@
             </div>
         </div>
 
-        <!-- Card 35: Christian Costello -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1316,11 +1103,38 @@
             </div>
         </div>
 
-        <!-- Card 36: Siddharth Dandekar -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Siddharth-Dandekar.webp" alt="Siddharth Dandekar" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2020/01/Thomas-DAgostino-2024.png.webp" alt="Thomas D'Agostino" class="photo">
+                    <div class="name">Thomas D'Agostino</div>
+                    <div class="title">Executive Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2021/04/Siddharth-Dandekar-2024.png.webp" alt="Siddharth Dandekar" class="photo">
                     <div class="name">Siddharth Dandekar</div>
                     <div class="title">Director</div>
                 </div>
@@ -1329,7 +1143,7 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Enjoys cricket</li>
+                                <li>Played semi professional soccer in a prior life</li>
                             </ul>
                         </div>
                     </div>
@@ -1337,7 +1151,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Strong analytical skills</li>
+                                <li>CFA Charterholder since 2018</li>
                             </ul>
                         </div>
                     </div>
@@ -1345,7 +1159,6 @@
             </div>
         </div>
 
-        <!-- Card 37: Lauren Davis -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1374,7 +1187,6 @@
             </div>
         </div>
 
-        <!-- Card 38: Matthew Davis -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1403,7 +1215,6 @@
             </div>
         </div>
 
-        <!-- Card 39: Max Drezner -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1432,7 +1243,6 @@
             </div>
         </div>
 
-        <!-- Card 40: Andy Fernandez -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1461,7 +1271,6 @@
             </div>
         </div>
 
-        <!-- Card 41: Adam Foster -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1490,7 +1299,6 @@
             </div>
         </div>
 
-        <!-- Card 42: Noah Friedman -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1519,7 +1327,6 @@
             </div>
         </div>
 
-        <!-- Card 43: Erica Galizia -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1551,7 +1358,6 @@
             </div>
         </div>
 
-        <!-- Card 44: Manuel Garcia -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1583,7 +1389,6 @@
             </div>
         </div>
 
-        <!-- Card 45: Robert Garcia -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1612,7 +1417,6 @@
             </div>
         </div>
 
-        <!-- Card 46: Kelsey Gaul -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1641,7 +1445,34 @@
             </div>
         </div>
 
-        <!-- Card 47: Peter Gonzalez -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2019/05/Howie-Goldstein-2024.png.webp" alt="Howard Goldstein" class="photo">
+                    <div class="name">Howard Goldstein</div>
+                    <div class="title">Managing Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1670,7 +1501,6 @@
             </div>
         </div>
 
-        <!-- Card 48: Sophie Graham -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1699,7 +1529,6 @@
             </div>
         </div>
 
-        <!-- Card 49: Matthew Grasso -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1728,7 +1557,6 @@
             </div>
         </div>
 
-        <!-- Card 50: Rachel Green -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1757,7 +1585,34 @@
             </div>
         </div>
 
-        <!-- Card 51: Rich Halevy -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2020/11/Gaurang-Gupta-2024.png.webp" alt="Gaurang Gupta" class="photo">
+                    <div class="name">Gaurang Gupta</div>
+                    <div class="title">Managing Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1786,7 +1641,6 @@
             </div>
         </div>
 
-        <!-- Card 52: Madison Hall -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1815,7 +1669,6 @@
             </div>
         </div>
 
-        <!-- Card 53: Natalie Harris -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1844,7 +1697,6 @@
             </div>
         </div>
 
-        <!-- Card 54: Matthew Heard -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1874,7 +1726,6 @@
             </div>
         </div>
 
-        <!-- Card 55: Jack Henderson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1903,7 +1754,6 @@
             </div>
         </div>
 
-        <!-- Card 56: Andrew Hsu -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1932,7 +1782,6 @@
             </div>
         </div>
 
-        <!-- Card 57: Derek Hughes -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -1961,11 +1810,10 @@
             </div>
         </div>
 
-        <!-- Card 58: Darcy Iria -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Darcy-Iria.webp" alt="Darcy Iria" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2023/05/Iria_Darcy_ACCORDION_BlackAndWhite_630x500.png.webp" alt="Darcy Iria" class="photo">
                     <div class="name">Darcy Iria</div>
                     <div class="title">Vice President, Financial Operations</div>
                 </div>
@@ -1974,7 +1822,9 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Detail-oriented professional</li>
+                                <li>Spent every summer in Portugal until 17</li>
+                                <li>Self-taught Makeup Artist (thank you YouTube!)</li>
+                                <li>Has an identical twin sister</li>
                             </ul>
                         </div>
                     </div>
@@ -1982,7 +1832,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Expert in financial operations</li>
+                                <li>Led a Women-only golf event for attorneys, mayors, judges, bank representatives</li>
                             </ul>
                         </div>
                     </div>
@@ -1990,7 +1840,6 @@
             </div>
         </div>
 
-        <!-- Card 59: Skylar Ivancie -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2020,7 +1869,6 @@
             </div>
         </div>
 
-        <!-- Card 60: Simon Jenkins -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2049,7 +1897,6 @@
             </div>
         </div>
 
-        <!-- Card 61: Daniel Johnson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2078,7 +1925,6 @@
             </div>
         </div>
 
-        <!-- Card 62: Kimberly Johnson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2107,7 +1953,6 @@
             </div>
         </div>
 
-        <!-- Card 63: Yun Jung -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2136,7 +1981,6 @@
             </div>
         </div>
 
-        <!-- Card 64: Steven Kaufman -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2165,7 +2009,6 @@
             </div>
         </div>
 
-        <!-- Card 65: Andrew Kim -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2194,7 +2037,6 @@
             </div>
         </div>
 
-        <!-- Card 66: Daniel Kim -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2223,7 +2065,6 @@
             </div>
         </div>
 
-        <!-- Card 67: Grace Kim -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2252,7 +2093,6 @@
             </div>
         </div>
 
-        <!-- Card 68: Jennifer Kim -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2281,7 +2121,6 @@
             </div>
         </div>
 
-        <!-- Card 69: Rachel Kim -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2310,7 +2149,6 @@
             </div>
         </div>
 
-        <!-- Card 70: Avery Kovler -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2340,7 +2178,34 @@
             </div>
         </div>
 
-        <!-- Card 71: Christopher Lee -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2020/01/Ben-Kushner-2024.png.webp" alt="Ben Kushner" class="photo">
+                    <div class="name">Ben Kushner</div>
+                    <div class="title">Vice President</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Bucket list includes all 50 states and six continents (no offense to Antarctica)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Certified Public Accountant</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2369,7 +2234,6 @@
             </div>
         </div>
 
-        <!-- Card 72: Emily Lee -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2398,7 +2262,6 @@
             </div>
         </div>
 
-        <!-- Card 73: Jonathan Lee -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2427,7 +2290,6 @@
             </div>
         </div>
 
-        <!-- Card 74: Michelle Lee -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2456,7 +2318,6 @@
             </div>
         </div>
 
-        <!-- Card 75: Nick Leopard -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2488,7 +2349,6 @@
             </div>
         </div>
 
-        <!-- Card 76: Amanda Lewis -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2517,7 +2377,6 @@
             </div>
         </div>
 
-        <!-- Card 77: Kevin Liu -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2546,7 +2405,6 @@
             </div>
         </div>
 
-        <!-- Card 78: Sujay Madyastha -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2575,7 +2433,6 @@
             </div>
         </div>
 
-        <!-- Card 79: Nicholas Maiolino -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2604,7 +2461,6 @@
             </div>
         </div>
 
-        <!-- Card 80: Adam Malizio -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2633,11 +2489,10 @@
             </div>
         </div>
 
-        <!-- Card 81: Jennifer Maloney -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Jennifer-Maloney.webp" alt="Jennifer Maloney" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2021/08/Jennifer-Maloney-2024.png.webp" alt="Jennifer Maloney" class="photo">
                     <div class="name">Jennifer Maloney</div>
                     <div class="title">Director</div>
                 </div>
@@ -2646,7 +2501,9 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Enjoys travel</li>
+                                <li>Spent time abroad in Florence, Italy</li>
+                                <li>Fashion enthusiast serving as personal shopper</li>
+                                <li>Working toward visiting all MLB stadiums (6/30)</li>
                             </ul>
                         </div>
                     </div>
@@ -2654,7 +2511,8 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Experience in finance transformation</li>
+                                <li>CPA licensed in NY</li>
+                                <li>Member of Beta Gamma Sigma honor organization</li>
                             </ul>
                         </div>
                     </div>
@@ -2662,7 +2520,6 @@
             </div>
         </div>
 
-        <!-- Card 82: Matt Marcus -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2691,7 +2548,6 @@
             </div>
         </div>
 
-        <!-- Card 83: Ashley Martin -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2720,7 +2576,6 @@
             </div>
         </div>
 
-        <!-- Card 84: Brian Martinez -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2749,7 +2604,6 @@
             </div>
         </div>
 
-        <!-- Card 85: Chloe Martinez -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2778,7 +2632,6 @@
             </div>
         </div>
 
-        <!-- Card 86: David Martinez -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2807,7 +2660,6 @@
             </div>
         </div>
 
-        <!-- Card 87: Kyle Mazeika -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2836,7 +2688,6 @@
             </div>
         </div>
 
-        <!-- Card 88: Connor McDaniel -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2865,7 +2716,6 @@
             </div>
         </div>
 
-        <!-- Card 89: Tim Meagher -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2894,7 +2744,6 @@
             </div>
         </div>
 
-        <!-- Card 90: Brandon Miller -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2923,7 +2772,6 @@
             </div>
         </div>
 
-        <!-- Card 91: Kyla Miller -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2952,7 +2800,6 @@
             </div>
         </div>
 
-        <!-- Card 92: Sarah Mitchell -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -2981,7 +2828,6 @@
             </div>
         </div>
 
-        <!-- Card 93: Christina Moore -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3010,7 +2856,6 @@
             </div>
         </div>
 
-        <!-- Card 94: Brendan Moran -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3039,7 +2884,6 @@
             </div>
         </div>
 
-        <!-- Card 95: Gary Moran -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3070,7 +2914,6 @@
             </div>
         </div>
 
-        <!-- Card 96: Jennifer Morgan -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3099,7 +2942,6 @@
             </div>
         </div>
 
-        <!-- Card 97: Ethan Morris -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3128,11 +2970,10 @@
             </div>
         </div>
 
-        <!-- Card 98: Russ Moy -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Russ-Moy.webp" alt="Russ Moy" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2021/08/Russ-Moy-2024.png.webp" alt="Russ Moy" class="photo">
                     <div class="name">Russ Moy</div>
                     <div class="title">Director, Talent Acquisition</div>
                 </div>
@@ -3141,7 +2982,9 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Passionate about finding great talent</li>
+                                <li>Grew up in SoCal, moved to East Coast twice</li>
+                                <li>Performed security for music artists</li>
+                                <li>2x Polar Plunge participant</li>
                             </ul>
                         </div>
                     </div>
@@ -3149,7 +2992,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Leads recruiting efforts</li>
+                                <li>Active member of Alex's Lemonade Stand Foundation for childhood cancer</li>
                             </ul>
                         </div>
                     </div>
@@ -3157,7 +3000,6 @@
             </div>
         </div>
 
-        <!-- Card 99: Connor Murphy -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3186,7 +3028,6 @@
             </div>
         </div>
 
-        <!-- Card 100: Kevin Murphy -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3215,7 +3056,6 @@
             </div>
         </div>
 
-        <!-- Card 101: Lily Nakamura -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3244,7 +3084,6 @@
             </div>
         </div>
 
-        <!-- Card 102: Jason Nguyen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3273,7 +3112,6 @@
             </div>
         </div>
 
-        <!-- Card 103: Linh Nguyen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3302,7 +3140,6 @@
             </div>
         </div>
 
-        <!-- Card 104: Patrick O'Brien -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3331,7 +3168,6 @@
             </div>
         </div>
 
-        <!-- Card 105: Reina Oda -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3360,7 +3196,34 @@
             </div>
         </div>
 
-        <!-- Card 106: David Park -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2021/01/John-Pancetti-2024.png.webp" alt="John Pancetti" class="photo">
+                    <div class="name">John Pancetti</div>
+                    <div class="title">Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Information not available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3389,7 +3252,6 @@
             </div>
         </div>
 
-        <!-- Card 107: Justin Park -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3418,7 +3280,6 @@
             </div>
         </div>
 
-        <!-- Card 108: Sanjeev Parlikar -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3449,7 +3310,6 @@
             </div>
         </div>
 
-        <!-- Card 109: Maya Patel -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3478,7 +3338,6 @@
             </div>
         </div>
 
-        <!-- Card 110: Thomas Patel -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3507,7 +3366,6 @@
             </div>
         </div>
 
-        <!-- Card 111: Jeremy Pawlak -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3538,7 +3396,6 @@
             </div>
         </div>
 
-        <!-- Card 112: Jessica Peng -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3567,7 +3424,6 @@
             </div>
         </div>
 
-        <!-- Card 113: Anna Petrov -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3596,7 +3452,6 @@
             </div>
         </div>
 
-        <!-- Card 114: Hayk Piloyan -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3625,7 +3480,6 @@
             </div>
         </div>
 
-        <!-- Card 115: Tanya Popli -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3654,7 +3508,6 @@
             </div>
         </div>
 
-        <!-- Card 116: Dara Rafiee -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3683,7 +3536,6 @@
             </div>
         </div>
 
-        <!-- Card 117: Will Raia -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3712,7 +3564,6 @@
             </div>
         </div>
 
-        <!-- Card 118: Allison Reed -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3741,7 +3592,6 @@
             </div>
         </div>
 
-        <!-- Card 119: Emma Reed -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3771,11 +3621,10 @@
             </div>
         </div>
 
-        <!-- Card 120: Adam Rhum -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Adam-Rhum.webp" alt="Adam Rhum" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2022/04/Adam-Rhum-2024.png.webp" alt="Adam Rhum" class="photo">
                     <div class="name">Adam Rhum</div>
                     <div class="title">Director</div>
                 </div>
@@ -3784,7 +3633,7 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Enjoys outdoor activities</li>
+                                <li>Avid sports fan - both playing (golf & basketball) and cheering (Chicago & Illinois teams)</li>
                             </ul>
                         </div>
                     </div>
@@ -3792,7 +3641,8 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Experience in financial consulting</li>
+                                <li>CPA in Illinois</li>
+                                <li>Certified Insolvency and Restructuring Advisor (CIRA)</li>
                             </ul>
                         </div>
                     </div>
@@ -3800,7 +3650,6 @@
             </div>
         </div>
 
-        <!-- Card 121: Ava Richardson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3829,7 +3678,6 @@
             </div>
         </div>
 
-        <!-- Card 122: Alex Rivera -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3858,7 +3706,6 @@
             </div>
         </div>
 
-        <!-- Card 123: Emily Roberts -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3887,7 +3734,6 @@
             </div>
         </div>
 
-        <!-- Card 124: Mark Robinson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3916,7 +3762,6 @@
             </div>
         </div>
 
-        <!-- Card 125: Carlos Rodriguez -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3945,7 +3790,6 @@
             </div>
         </div>
 
-        <!-- Card 126: Anthony Romano -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -3974,7 +3818,6 @@
             </div>
         </div>
 
-        <!-- Card 127: Jacob Rosen -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4003,7 +3846,6 @@
             </div>
         </div>
 
-        <!-- Card 128: Elissa Russo -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4032,7 +3874,35 @@
             </div>
         </div>
 
-        <!-- Card 129: Justin Sanchez -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2020/12/Brian-Sammut.png.webp" alt="Brian Sammut" class="photo">
+                    <div class="name">Brian Sammut</div>
+                    <div class="title">Managing Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Passionate about soccer as fan and player</li>
+                                <li>Family are all certified scuba divers</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Selected for specialized program traveling to Singapore and Malaysia to study macro-economic trends</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4061,7 +3931,6 @@
             </div>
         </div>
 
-        <!-- Card 130: Isabelle Santos -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4090,7 +3959,6 @@
             </div>
         </div>
 
-        <!-- Card 131: Alex Schulman -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4119,7 +3987,6 @@
             </div>
         </div>
 
-        <!-- Card 132: Megan Scott -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4148,7 +4015,6 @@
             </div>
         </div>
 
-        <!-- Card 133: Jessica Seol -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4177,7 +4043,6 @@
             </div>
         </div>
 
-        <!-- Card 134: Greg Seryy -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4206,7 +4071,6 @@
             </div>
         </div>
 
-        <!-- Card 135: Rahul Sharma -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4235,11 +4099,10 @@
             </div>
         </div>
 
-        <!-- Card 136: Udit Sharma -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Udit-Sharma.webp" alt="Udit Sharma" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2021/11/Udit-Sharma-2024.png.webp" alt="Udit Sharma" class="photo">
                     <div class="name">Udit Sharma</div>
                     <div class="title">Managing Director</div>
                 </div>
@@ -4248,7 +4111,9 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Technology enthusiast</li>
+                                <li>Completed early education across 3 countries</li>
+                                <li>Holds martial arts black belt</li>
+                                <li>Enjoys golf and cricket</li>
                             </ul>
                         </div>
                     </div>
@@ -4256,7 +4121,9 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Leads technology initiatives</li>
+                                <li>Created fuzzy logic tandem mill control system—first in steel industry</li>
+                                <li>Extensively published</li>
+                                <li>Advised leaders worldwide</li>
                             </ul>
                         </div>
                     </div>
@@ -4264,7 +4131,6 @@
             </div>
         </div>
 
-        <!-- Card 137: Lucas Spagnoletti -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4293,7 +4159,6 @@
             </div>
         </div>
 
-        <!-- Card 138: Adam Steinberg -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4322,7 +4187,6 @@
             </div>
         </div>
 
-        <!-- Card 139: Pamela Stern -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4351,7 +4215,6 @@
             </div>
         </div>
 
-        <!-- Card 140: Jake Sullivan -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4380,7 +4243,6 @@
             </div>
         </div>
 
-        <!-- Card 141: Jonathan Tasca -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4409,7 +4271,6 @@
             </div>
         </div>
 
-        <!-- Card 142: Eric Taylor -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4438,7 +4299,6 @@
             </div>
         </div>
 
-        <!-- Card 143: Samantha Taylor -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4467,7 +4327,6 @@
             </div>
         </div>
 
-        <!-- Card 144: Sonny Thadani -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4500,11 +4359,10 @@
             </div>
         </div>
 
-        <!-- Card 145: Dimitri Theofanis -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
-                    <img src="https://www.accordion.com/wp-content/uploads/2022/03/Dimitri-Theofanis.webp" alt="Dimitri Theofanis" class="photo">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2021/04/Theofanis_Dimitri_ACCORDION_BlackAndWhite_630x500.png.webp" alt="Dimitri Theofanis" class="photo">
                     <div class="name">Dimitri Theofanis</div>
                     <div class="title">Director</div>
                 </div>
@@ -4513,7 +4371,8 @@
                         <div class="section-label">Something You Should Know</div>
                         <div class="section-content">
                             <ul>
-                                <li>Greek heritage</li>
+                                <li>Travelled to 30+ countries across three continents</li>
+                                <li>Loves any type of puzzle or brainteaser</li>
                             </ul>
                         </div>
                     </div>
@@ -4521,7 +4380,7 @@
                         <div class="section-label">Noteworthy</div>
                         <div class="section-content">
                             <ul>
-                                <li>Experience in financial consulting</li>
+                                <li>Thomas G. Labrecque Smart Start Scholarship recipient at NYU</li>
                             </ul>
                         </div>
                     </div>
@@ -4529,7 +4388,6 @@
             </div>
         </div>
 
-        <!-- Card 146: Jessica Thompson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4558,7 +4416,6 @@
             </div>
         </div>
 
-        <!-- Card 147: Ryan Thompson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4587,7 +4444,36 @@
             </div>
         </div>
 
-        <!-- Card 148: Michelle Torres -->
+        <div class="team-card">
+            <div class="card-content">
+                <div class="photo-column">
+                    <img src="https://www.accordion.com/wp-content/webp-express/webp-images/uploads/2019/12/Mark-Tiernan-2024.png.webp" alt="Mark Tiernan" class="photo">
+                    <div class="name">Mark Tiernan</div>
+                    <div class="title">Director</div>
+                </div>
+                <div class="info-columns">
+                    <div class="section">
+                        <div class="section-label">Something You Should Know</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Completes marathons for charity (aspiring to finish all six major marathons)</li>
+                                <li>Passionate Villanova Basketball supporter</li>
+                                <li>Regular music festival/concert attendee</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="section noteworthy-section">
+                        <div class="section-label">Noteworthy</div>
+                        <div class="section-content">
+                            <ul>
+                                <li>Previously served as VP of Finance for Sigma Phi Epsilon at Villanova</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4616,7 +4502,6 @@
             </div>
         </div>
 
-        <!-- Card 149: Sammy Tozour -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4645,7 +4530,6 @@
             </div>
         </div>
 
-        <!-- Card 150: Kim Thi Tran -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4676,7 +4560,6 @@
             </div>
         </div>
 
-        <!-- Card 151: Amalia Tsamis -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4705,7 +4588,6 @@
             </div>
         </div>
 
-        <!-- Card 152: Mia Turner -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4734,7 +4616,6 @@
             </div>
         </div>
 
-        <!-- Card 153: Emily Vallejo -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4763,7 +4644,6 @@
             </div>
         </div>
 
-        <!-- Card 154: Jennifer Walsh -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4792,7 +4672,6 @@
             </div>
         </div>
 
-        <!-- Card 155: Henry Wang -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4821,7 +4700,6 @@
             </div>
         </div>
 
-        <!-- Card 156: Emma Watson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4850,7 +4728,6 @@
             </div>
         </div>
 
-        <!-- Card 157: Steven White -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4879,7 +4756,6 @@
             </div>
         </div>
 
-        <!-- Card 158: Hannah Williams -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4908,7 +4784,6 @@
             </div>
         </div>
 
-        <!-- Card 159: Nicole Williams -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4937,7 +4812,6 @@
             </div>
         </div>
 
-        <!-- Card 160: James Wilson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4966,7 +4840,6 @@
             </div>
         </div>
 
-        <!-- Card 161: Laura Wilson -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -4995,7 +4868,6 @@
             </div>
         </div>
 
-        <!-- Card 162: Chris Wong -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -5024,7 +4896,6 @@
             </div>
         </div>
 
-        <!-- Card 163: Irene Wong -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -5053,7 +4924,6 @@
             </div>
         </div>
 
-        <!-- Card 164: Evan Yenor -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -5083,7 +4953,6 @@
             </div>
         </div>
 
-        <!-- Card 165: Scott Young -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -5112,7 +4981,6 @@
             </div>
         </div>
 
-        <!-- Card 166: Olivia Zhang -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -5141,7 +5009,6 @@
             </div>
         </div>
 
-        <!-- Card 167: Emily Zhao -->
         <div class="team-card">
             <div class="card-content">
                 <div class="photo-column">
@@ -5170,117 +5037,25 @@
             </div>
         </div>
     </div>
-
-    <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-    </div>
-
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
     <div class="card-counter" id="cardCounter"></div>
-
     <div class="controls">
         <span class="control-link" onclick="toggleMode()">Pause</span>
         <span class="control-link" onclick="prevCard()">Previous</span>
         <span class="control-link" onclick="nextCard()">Next</span>
     </div>
-
     <script>
-        let currentCard = 0;
-        let slideshowMode = true;
-        let autoSlide = null;
-        let progressInterval = null;
-        let progressWidth = 0;
-        const SLIDE_DURATION = 10000; // 10 seconds
-        const PROGRESS_UPDATE_INTERVAL = 50;
-
-        function updateCounter() {
-            const cards = document.querySelectorAll('.team-card');
-            document.getElementById('cardCounter').textContent = (currentCard + 1) + ' / ' + cards.length;
-        }
-
-        function resetProgress() {
-            progressWidth = 0;
-            document.getElementById('progressBar').style.width = '0%';
-        }
-
-        function startProgress() {
-            resetProgress();
-            if (progressInterval) clearInterval(progressInterval);
-
-            const increment = (100 / (SLIDE_DURATION / PROGRESS_UPDATE_INTERVAL));
-            progressInterval = setInterval(() => {
-                progressWidth += increment;
-                document.getElementById('progressBar').style.width = progressWidth + '%';
-                if (progressWidth >= 100) {
-                    progressWidth = 0;
-                }
-            }, PROGRESS_UPDATE_INTERVAL);
-        }
-
-        function stopProgress() {
-            if (progressInterval) clearInterval(progressInterval);
-            document.getElementById('progressBar').style.width = '0%';
-        }
-
-        function toggleMode() {
-            slideshowMode = !slideshowMode;
-            const toggleLink = document.querySelector('.controls .control-link');
-
-            if (slideshowMode) {
-                toggleLink.textContent = 'Pause';
-                document.body.classList.add('slideshow-mode');
-                startSlideshow();
-            } else {
-                toggleLink.textContent = 'Play';
-                document.body.classList.remove('slideshow-mode');
-                if (autoSlide) clearInterval(autoSlide);
-                stopProgress();
-            }
-        }
-
-        function startSlideshow() {
-            const cards = document.querySelectorAll('.team-card');
-            cards.forEach((card, i) => {
-                card.classList.toggle('active', i === currentCard);
-            });
-            updateCounter();
-            startProgress();
-            autoSlide = setInterval(() => {
-                nextCard();
-                resetProgress();
-            }, SLIDE_DURATION);
-        }
-
-        function nextCard() {
-            const cards = document.querySelectorAll('.team-card');
-            cards[currentCard].classList.remove('active');
-            currentCard = (currentCard + 1) % cards.length;
-            cards[currentCard].classList.add('active');
-            updateCounter();
-            if (slideshowMode) {
-                resetProgress();
-            }
-        }
-
-        function prevCard() {
-            const cards = document.querySelectorAll('.team-card');
-            cards[currentCard].classList.remove('active');
-            currentCard = (currentCard - 1 + cards.length) % cards.length;
-            cards[currentCard].classList.add('active');
-            updateCounter();
-            if (slideshowMode) {
-                resetProgress();
-                if (autoSlide) clearInterval(autoSlide);
-                autoSlide = setInterval(() => {
-                    nextCard();
-                    resetProgress();
-                }, SLIDE_DURATION);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.body.classList.add('slideshow-mode');
-            startSlideshow();
-        });
+        let currentCard = 0, slideshowMode = true, autoSlide = null, progressInterval = null, progressWidth = 0;
+        const SLIDE_DURATION = 10000, PROGRESS_UPDATE_INTERVAL = 50;
+        function updateCounter() { const cards = document.querySelectorAll('.team-card'); document.getElementById('cardCounter').textContent = (currentCard + 1) + ' / ' + cards.length; }
+        function resetProgress() { progressWidth = 0; document.getElementById('progressBar').style.width = '0%'; }
+        function startProgress() { resetProgress(); if (progressInterval) clearInterval(progressInterval); const increment = (100 / (SLIDE_DURATION / PROGRESS_UPDATE_INTERVAL)); progressInterval = setInterval(() => { progressWidth += increment; document.getElementById('progressBar').style.width = progressWidth + '%'; if (progressWidth >= 100) progressWidth = 0; }, PROGRESS_UPDATE_INTERVAL); }
+        function stopProgress() { if (progressInterval) clearInterval(progressInterval); document.getElementById('progressBar').style.width = '0%'; }
+        function toggleMode() { slideshowMode = !slideshowMode; const toggleLink = document.querySelector('.controls .control-link'); if (slideshowMode) { toggleLink.textContent = 'Pause'; document.body.classList.add('slideshow-mode'); startSlideshow(); } else { toggleLink.textContent = 'Play'; document.body.classList.remove('slideshow-mode'); if (autoSlide) clearInterval(autoSlide); stopProgress(); } }
+        function startSlideshow() { const cards = document.querySelectorAll('.team-card'); cards.forEach((card, i) => { card.classList.toggle('active', i === currentCard); }); updateCounter(); startProgress(); autoSlide = setInterval(() => { nextCard(); resetProgress(); }, SLIDE_DURATION); }
+        function nextCard() { const cards = document.querySelectorAll('.team-card'); cards[currentCard].classList.remove('active'); currentCard = (currentCard + 1) % cards.length; cards[currentCard].classList.add('active'); updateCounter(); if (slideshowMode) resetProgress(); }
+        function prevCard() { const cards = document.querySelectorAll('.team-card'); cards[currentCard].classList.remove('active'); currentCard = (currentCard - 1 + cards.length) % cards.length; cards[currentCard].classList.add('active'); updateCounter(); if (slideshowMode) { resetProgress(); if (autoSlide) clearInterval(autoSlide); autoSlide = setInterval(() => { nextCard(); resetProgress(); }, SLIDE_DURATION); } }
+        document.addEventListener('DOMContentLoaded', () => { document.body.classList.add('slideshow-mode'); startSlideshow(); });
     </script>
 </body>
 </html>
