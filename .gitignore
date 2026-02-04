@@ -1,0 +1,12 @@
+.DS_Store
+.claude/
+*.zip
+NYC Headshots/
+PE Hub script for dist/
+build/
+dist/
+files/
+*.py
+*.js
+*.spec
+/tmp/
