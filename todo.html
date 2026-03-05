@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Custom Properties ─────────────────────────────────────── */
+    :root {
+      --bg:            #f7f7f6;
+      --surface:       #ffffff;
+      --border:        #e5e5e3;
+      --border-hover:  #c9c9c6;
+      --text-primary:  #1a1a1a;
+      --text-secondary:#787774;
+      --accent:        #2f6feb;
+      --accent-hover:  #1a56d6;
+      --accent-light:  #eef3fd;
+      --done-text:     #b0aead;
+      --done-bg:       #fafaf9;
+      --danger:        #e5534b;
+      --col-width:     220px;
+      --fab-size:      48px;
+      --modal-width:   480px;
+      --header-h:      52px;
+      --radius-sm:     5px;
+      --radius-md:     10px;
+      --transition:    140ms ease;
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    /* ─── Header ────────────────────────────────────────────────── */
+    .app-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 50;
+    }
+
+    .app-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .shortcut-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px 8px;
+    }
+
+    /* ─── Board ─────────────────────────────────────────────────── */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, var(--col-width));
+      gap: 14px;
+      padding: 24px;
+      padding-top: calc(var(--header-h) + 24px);
+      min-height: 100vh;
+      align-items: start;
+      overflow-x: auto;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    /* ─── Column ─────────────────────────────────────────────────── */
+    .column {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      min-height: 120px;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .column.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .col-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 12px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .col-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .col-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .col-count {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 1px 6px;
+      min-width: 18px;
+      text-align: center;
+      display: none;
+    }
+
+    .col-count.visible { display: inline-block; }
+
+    .col-add-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      line-height: 1;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .col-add-btn:hover {
+      background: var(--bg);
+      color: var(--text-primary);
+    }
+
+    /* ─── Task List ──────────────────────────────────────────────── */
+    .task-list {
+      list-style: none;
+      padding: 4px 0;
+    }
+
+    /* ─── Task Item ──────────────────────────────────────────────── */
+    .task-item {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      cursor: default;
+      transition: background var(--transition);
+      position: relative;
+    }
+
+    .task-item:last-child { border-bottom: none; }
+    .task-item:hover { background: #f5f5f3; }
+
+    .task-text {
+      flex: 1;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity var(--transition);
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    .task-item:hover .task-actions { opacity: 1; }
+
+    .action-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition), color var(--transition);
+      flex-shrink: 0;
+    }
+
+    .done-btn:hover    { background: #d4f0d4; color: #2d7d2d; }
+    .restore-btn:hover { background: var(--accent-light); color: var(--accent); }
+    .delete-btn:hover  { background: #fde8e7; color: var(--danger); }
+    .edit-btn:hover    { background: var(--accent-light); color: var(--accent); }
+
+    /* ─── Inline Edit ────────────────────────────────────────────── */
+    .task-edit-input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 0;
+      width: 100%;
+      word-break: break-word;
+    }
+
+    .task-item.editing .task-actions { display: none; }
+    .task-item.editing { cursor: text; }
+
+    /* ─── Done Column ────────────────────────────────────────────── */
+    .column[data-col="done"] { background: var(--done-bg); }
+
+    .column[data-col="done"] .task-text {
+      color: var(--done-text);
+      text-decoration: line-through;
+    }
+
+    .column[data-col="done"] .col-title { color: #b0aead; }
+
+    /* ─── Empty State ────────────────────────────────────────────── */
+    .empty-state {
+      padding: 16px 12px;
+      text-align: center;
+      font-size: 12px;
+      color: #c0bebb;
+      user-select: none;
+    }
+
+    /* ─── Drag ───────────────────────────────────────────────────── */
+    .task-item[draggable="true"] { cursor: grab; }
+    .task-item[draggable="true"]:active { cursor: grabbing; }
+    .task-item.dragging { opacity: 0.4; }
+
+    /* ─── Drop Indicator ─────────────────────────────────────────── */
+    .drop-indicator {
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+      margin: 0 8px;
+      pointer-events: none;
+    }
+
+    /* ─── FAB ────────────────────────────────────────────────────── */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: var(--fab-size);
+      height: var(--fab-size);
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 26px;
+      line-height: 1;
+      border: none;
+      box-shadow: 0 4px 14px rgba(47, 111, 235, 0.35);
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fab:hover {
+      background: var(--accent-hover);
+      transform: scale(1.06);
+      box-shadow: 0 6px 18px rgba(47, 111, 235, 0.45);
+    }
+
+    /* ─── Modal Overlay ──────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ─── Modal ──────────────────────────────────────────────────── */
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      width: var(--modal-width);
+      max-width: calc(100vw - 32px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(10px);
+      transition: transform 200ms ease;
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .modal-close:hover { background: var(--bg); color: var(--text-primary); }
+
+    /* ─── Section Tabs ───────────────────────────────────────────── */
+    .section-tabs {
+      display: flex;
+      gap: 5px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .section-tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      padding: 4px 10px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+    }
+
+    .tab:hover { background: var(--bg); border-color: var(--border-hover); color: var(--text-primary); }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* ─── Modal Input ────────────────────────────────────────────── */
+    .modal-input {
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 14px 16px;
+      resize: none;
+      min-height: 100px;
+      width: 100%;
+    }
+
+    .modal-input::placeholder { color: #c0bebb; }
+
+    /* ─── Modal Footer ───────────────────────────────────────────── */
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .modal-hint {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:active { transform: scale(0.97); }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Header ─────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <span class="app-title">Todo Board</span>
+    <span class="shortcut-hint">⌘⇧T to add</span>
+  </header>
+
+  <!-- ─── Board ──────────────────────────────────────────────────── -->
+  <main class="board" id="board">
+
+    <section class="column" data-col="todos">
+      <div class="col-header">
+        <div class="col-title-wrap">
+          <h2 class="col-title">My To-Dos</h2>
+          <span class="col-count" data-col="todos"></span>
+        </div>
+        <button class="col-add-btn" data-col="todos" title="Add to My To-Dos">+</button>
+      </div>
+      <ul class="task-list" data-col="todos"></ul>
+    </section>
+
+    <section class="column" data-col="waiting">
+      <div class="col-header">
+        <div class="col-title-wrap">
+          <h2 class="col-title">Waiting on Others</h2>
+          <span class="col-count" data-col="waiting"></span>
+        </div>
+        <button class="col-add-btn" data-col="waiting" title="Add to Waiting on Others">+</button>
+      </div>
+      <ul class="task-list" data-col="waiting"></ul>
+    </section>
+
+    <section class="column" data-col="secondary">
+      <div class="col-header">
+        <div class="col-title-wrap">
+          <h2 class="col-title">Secondary</h2>
+          <span class="col-count" data-col="secondary"></span>
+        </div>
+        <button class="col-add-btn" data-col="secondary" title="Add to Secondary Priorities">+</button>
+      </div>
+      <ul class="task-list" data-col="secondary"></ul>
+    </section>
+
+    <section class="column" data-col="courtney">
+      <div class="col-header">
+        <div class="col-title-wrap">
+          <h2 class="col-title">For Courtney</h2>
+          <span class="col-count" data-col="courtney"></span>
+        </div>
+        <button class="col-add-btn" data-col="courtney" title="Add to For Courtney">+</button>
+      </div>
+      <ul class="task-list" data-col="courtney"></ul>
+    </section>
+
+    <section class="column" data-col="done">
+      <div class="col-header">
+        <div class="col-title-wrap">
+          <h2 class="col-title">Done</h2>
+          <span class="col-count" data-col="done"></span>
+        </div>
+      </div>
+      <ul class="task-list" data-col="done"></ul>
+    </section>
+
+  </main>
+
+  <!-- ─── FAB ────────────────────────────────────────────────────── -->
+  <button class="fab" id="fab" title="Add todo (⌘⇧T)">+</button>
+
+  <!-- ─── Modal ──────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Add todo">
+
+      <div class="modal-header">
+        <h3>Add Todo</h3>
+        <button class="modal-close" id="modalClose" title="Close (Esc)">✕</button>
+      </div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button class="tab active" data-col="todos">My To-Dos</button>
+        <button class="tab" data-col="waiting">Waiting on Others</button>
+        <button class="tab" data-col="secondary">Secondary</button>
+        <button class="tab" data-col="courtney">For Courtney</button>
+      </div>
+
+      <textarea
+        class="modal-input"
+        id="modalInput"
+        placeholder="Type or paste — one todo per line…"
+        rows="4"
+      ></textarea>
+
+      <div class="modal-footer">
+        <span class="modal-hint">Enter to add &nbsp;·&nbsp; Shift+Enter for newline &nbsp;·&nbsp; Esc to cancel</span>
+        <button class="btn-primary" id="modalSubmit">Add</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ─── Constants ────────────────────────────────────────────────
+    const STORAGE_KEY = 'todo-app-v1';
+    const COLS = ['todos', 'waiting', 'secondary', 'courtney', 'done'];
+    const COL_LABELS = {
+      todos:     'My To-Dos',
+      waiting:   'Waiting on Others',
+      secondary: 'Secondary Priorities',
+      courtney:  'For Courtney',
+      done:      'Done',
+    };
+
+    // ─── Persistence ─────────────────────────────────────────────
+    function getDefaultState() {
+      return {
+        items: {},
+        order: { todos: [], waiting: [], secondary: [], courtney: [], done: [] },
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return getDefaultState();
+        const parsed = JSON.parse(raw);
+        if (!parsed.items || !parsed.order) return getDefaultState();
+        // ensure all cols exist in order (migration safety)
+        COLS.forEach(c => { if (!parsed.order[c]) parsed.order[c] = []; });
+        return parsed;
+      } catch {
+        return getDefaultState();
+      }
+    }
+
+    function saveState(s) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      } catch (e) {
+        console.warn('localStorage write failed', e);
+      }
+    }
+
+    // ─── Mutations ────────────────────────────────────────────────
+    function addTodo(s, text, col) {
+      const id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()));
+      const item = { id, text: text.trim(), createdAt: Date.now(), col };
+      return {
+        items: { ...s.items, [id]: item },
+        order: { ...s.order, [col]: [...s.order[col], id] },
+      };
+    }
+
+    function deleteTodo(s, id) {
+      const item = s.items[id];
+      if (!item) return s;
+      const { [id]: _removed, ...restItems } = s.items;
+      return {
+        items: restItems,
+        order: { ...s.order, [item.col]: s.order[item.col].filter(i => i !== id) },
+      };
+    }
+
+    function moveTodo(s, id, toCol) {
+      const item = s.items[id];
+      if (!item || item.col === toCol) return s;
+      const fromCol = item.col;
+      const updatedItem = { ...item, col: toCol };
+      return {
+        items: { ...s.items, [id]: updatedItem },
+        order: {
+          ...s.order,
+          [fromCol]: s.order[fromCol].filter(i => i !== id),
+          [toCol]:   [...s.order[toCol], id],
+        },
+      };
+    }
+
+    function editTodo(s, id, newText) {
+      const item = s.items[id];
+      if (!item) return s;
+      return { ...s, items: { ...s.items, [id]: { ...item, text: newText } } };
+    }
+
+    function reorderTodo(s, id, toCol, targetId, insertBefore) {
+      const item = s.items[id];
+      if (!item) return s;
+      const fromCol = item.col;
+      const updatedItem = { ...item, col: toCol };
+
+      // Remove from source column
+      const fromOrder = s.order[fromCol].filter(i => i !== id);
+
+      // Insert into target column at the right position
+      let toOrder = toCol === fromCol ? fromOrder : s.order[toCol].filter(i => i !== id);
+      const targetIdx = toOrder.indexOf(targetId);
+      if (targetIdx === -1) {
+        toOrder = [...toOrder, id];
+      } else {
+        const insertIdx = insertBefore ? targetIdx : targetIdx + 1;
+        toOrder = [...toOrder.slice(0, insertIdx), id, ...toOrder.slice(insertIdx)];
+      }
+
+      const newOrder = { ...s.order, [toCol]: toOrder };
+      if (fromCol !== toCol) newOrder[fromCol] = fromOrder;
+
+      return { items: { ...s.items, [id]: updatedItem }, order: newOrder };
+    }
+
+    // ─── Rendering ────────────────────────────────────────────────
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function createTaskElement(item) {
+      const li = document.createElement('li');
+      li.className = 'task-item';
+      li.dataset.id = item.id;
+      li.draggable = true;
+
+      const isDone = item.col === 'done';
+      const actions = isDone
+        ? `<button class="action-btn restore-btn" title="Restore to My To-Dos" data-id="${item.id}">↩</button>
+           <button class="action-btn delete-btn" title="Delete" data-id="${item.id}">✕</button>`
+        : `<button class="action-btn edit-btn" title="Edit" data-id="${item.id}">✏</button>
+           <button class="action-btn done-btn" title="Mark done" data-id="${item.id}">✓</button>
+           <button class="action-btn delete-btn" title="Delete" data-id="${item.id}">✕</button>`;
+
+      // Use a text node for the task text to prevent XSS
+      li.innerHTML = `<span class="task-text"></span><span class="task-actions">${actions}</span>`;
+      li.querySelector('.task-text').textContent = item.text;
+      return li;
+    }
+
+    function renderColumn(s, col) {
+      const list = document.querySelector(`.task-list[data-col="${col}"]`);
+      const badge = document.querySelector(`.col-count[data-col="${col}"]`);
+
+      list.innerHTML = '';
+      const ids = s.order[col];
+
+      if (ids.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty-state';
+        empty.textContent = col === 'done' ? 'Nothing done yet' : 'Empty';
+        list.appendChild(empty);
+      } else {
+        ids.forEach(id => {
+          const item = s.items[id];
+          if (item) list.appendChild(createTaskElement(item));
+        });
+      }
+
+      if (badge) {
+        badge.textContent = ids.length || '';
+        badge.classList.toggle('visible', ids.length > 0);
+      }
+    }
+
+    function render(s) {
+      COLS.forEach(col => renderColumn(s, col));
+    }
+
+    // ─── Modal Logic ──────────────────────────────────────────────
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalInput   = document.getElementById('modalInput');
+    const modal        = document.getElementById('modal');
+
+    function openModal(preselectedCol) {
+      if (preselectedCol) setActiveTab(preselectedCol);
+      modalOverlay.classList.add('open');
+      modalOverlay.setAttribute('aria-hidden', 'false');
+      setTimeout(() => modalInput.focus(), 50);
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+      modalOverlay.setAttribute('aria-hidden', 'true');
+      modalInput.value = '';
+    }
+
+    function submitModal() {
+      const text = modalInput.value;
+      const col  = getActiveTab();
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lines.length) return;
+      lines.forEach(line => { state = addTodo(state, line, col); });
+      saveState(state);
+      render(state);
+      closeModal();
+    }
+
+    function getActiveTab() {
+      return document.querySelector('#sectionTabs .tab.active')?.dataset.col ?? 'todos';
+    }
+
+    function setActiveTab(col) {
+      document.querySelectorAll('#sectionTabs .tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.col === col);
+      });
+    }
+
+    // ─── Event Listeners: Modal ───────────────────────────────────
+    document.getElementById('fab').addEventListener('click', () => openModal(null));
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalSubmit').addEventListener('click', submitModal);
+
+    modalOverlay.addEventListener('click', e => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    modalInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitModal(); }
+    });
+
+    // Focus trap inside modal
+    modal.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      const focusable = [...modal.querySelectorAll('button, textarea')].filter(el => !el.disabled);
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    // Section tab clicks
+    document.querySelectorAll('#sectionTabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => setActiveTab(tab.dataset.col));
+    });
+
+    // Column-level "+" buttons
+    document.querySelectorAll('.col-add-btn').forEach(btn => {
+      btn.addEventListener('click', () => openModal(btn.dataset.col));
+    });
+
+    // ─── Event Listeners: Keyboard ────────────────────────────────
+    document.addEventListener('keydown', e => {
+      // Cmd+Shift+T (Mac) or Ctrl+Shift+T (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'T' || e.key === 't')) {
+        e.preventDefault();
+        if (modalOverlay.classList.contains('open')) { closeModal(); }
+        else { openModal(null); }
+        return;
+      }
+      if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
+        closeModal();
+      }
+    });
+
+    // ─── Inline Edit ──────────────────────────────────────────────
+    let currentEditLi = null;
+
+    function startEdit(li, item) {
+      if (!li || !item) return;
+      // Cancel any other active edit first
+      if (currentEditLi && currentEditLi !== li) cancelCurrentEdit();
+
+      li.classList.add('editing');
+      li.draggable = false;
+      currentEditLi = li;
+
+      const textSpan = li.querySelector('.task-text');
+      textSpan.style.display = 'none';
+
+      const input = document.createElement('input');
+      input.className = 'task-edit-input';
+      input.value = item.text;
+      input.dataset.id = item.id;
+      input.dataset.original = item.text;
+
+      let committed = false;
+
+      function commit() {
+        if (committed) return;
+        committed = true;
+        const newText = input.value.trim();
+        if (newText && newText !== item.text) {
+          state = editTodo(state, item.id, newText);
+          saveState(state);
+        }
+        finishEdit(li, textSpan, input, newText || item.text);
+      }
+
+      function cancel() {
+        if (committed) return;
+        committed = true;
+        finishEdit(li, textSpan, input, item.text);
+      }
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+      });
+      input.addEventListener('blur', commit);
+
+      li.insertBefore(input, textSpan);
+      input.focus();
+      input.select();
+    }
+
+    function finishEdit(li, textSpan, input, displayText) {
+      textSpan.textContent = displayText;
+      textSpan.style.display = '';
+      if (input.parentNode) input.parentNode.removeChild(input);
+      li.classList.remove('editing');
+      li.draggable = true;
+      currentEditLi = null;
+    }
+
+    function cancelCurrentEdit() {
+      if (!currentEditLi) return;
+      const input = currentEditLi.querySelector('.task-edit-input');
+      const textSpan = currentEditLi.querySelector('.task-text');
+      if (input) {
+        const original = input.dataset.original;
+        finishEdit(currentEditLi, textSpan, input, original);
+      }
+    }
+
+    // ─── Event Delegation: Board Actions ─────────────────────────
+    document.getElementById('board').addEventListener('click', e => {
+      const editBtn    = e.target.closest('.edit-btn');
+      const doneBtn    = e.target.closest('.done-btn');
+      const restoreBtn = e.target.closest('.restore-btn');
+      const deleteBtn  = e.target.closest('.delete-btn');
+
+      if (editBtn) {
+        startEdit(editBtn.closest('.task-item'), state.items[editBtn.dataset.id]);
+      } else if (doneBtn) {
+        state = moveTodo(state, doneBtn.dataset.id, 'done');
+        saveState(state); render(state);
+      } else if (restoreBtn) {
+        state = moveTodo(state, restoreBtn.dataset.id, 'todos');
+        saveState(state); render(state);
+      } else if (deleteBtn) {
+        if (confirm('Delete this todo?')) {
+          state = deleteTodo(state, deleteBtn.dataset.id);
+          saveState(state); render(state);
+        }
+      }
+    });
+
+    // ─── Drag and Drop ────────────────────────────────────────────
+    let dragId = null;
+
+    function removeDropIndicator() {
+      document.querySelectorAll('.drop-indicator').forEach(el => el.remove());
+    }
+
+    function showDropIndicator(col, targetLi, clientY) {
+      removeDropIndicator();
+      const list = col.querySelector('.task-list');
+      if (!list) return;
+      const indicator = document.createElement('div');
+      indicator.className = 'drop-indicator';
+      if (targetLi && targetLi.dataset.id !== dragId) {
+        const rect = targetLi.getBoundingClientRect();
+        const insertBefore = clientY < rect.top + rect.height / 2;
+        if (insertBefore) {
+          list.insertBefore(indicator, targetLi);
+        } else {
+          targetLi.after(indicator);
+        }
+      } else if (!targetLi) {
+        list.appendChild(indicator);
+      }
+    }
+
+    document.getElementById('board').addEventListener('dragstart', e => {
+      const li = e.target.closest('.task-item');
+      if (!li) return;
+      dragId = li.dataset.id;
+      li.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dragId);
+    });
+
+    document.getElementById('board').addEventListener('dragend', e => {
+      const li = e.target.closest('.task-item');
+      if (li) li.classList.remove('dragging');
+      document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
+      removeDropIndicator();
+      dragId = null;
+    });
+
+    document.querySelectorAll('.column').forEach(col => {
+      col.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        col.classList.add('drag-over');
+        const targetLi = e.target.closest('.task-item');
+        showDropIndicator(col, targetLi, e.clientY);
+      });
+      col.addEventListener('dragleave', e => {
+        // Only remove if leaving the column entirely (not entering a child)
+        if (!col.contains(e.relatedTarget)) {
+          col.classList.remove('drag-over');
+          removeDropIndicator();
+        }
+      });
+      col.addEventListener('drop', e => {
+        e.preventDefault();
+        col.classList.remove('drag-over');
+        removeDropIndicator();
+        const toCol = col.dataset.col;
+        if (!dragId) return;
+
+        const targetLi = e.target.closest('.task-item');
+        if (targetLi && targetLi.dataset.id !== dragId) {
+          const rect = targetLi.getBoundingClientRect();
+          const insertBefore = e.clientY < rect.top + rect.height / 2;
+          state = reorderTodo(state, dragId, toCol, targetLi.dataset.id, insertBefore);
+        } else {
+          state = moveTodo(state, dragId, toCol);
+        }
+        saveState(state);
+        render(state);
+      });
+    });
+
+    // ─── URL Inbox (macOS Shortcut integration) ───────────────────
+    // Shortcut opens: todo.html?add=TEXT&col=COLUMN
+    // Page imports the item, saves, then strips the URL params.
+    function processUrlInbox() {
+      const params = new URLSearchParams(window.location.search);
+      const text = params.get('add');
+      const col  = params.get('col');
+      if (!text) return;
+
+      const targetCol = (col && COLS.includes(col)) ? col : 'todos';
+      const lines = decodeURIComponent(text).split('\n').map(l => l.trim()).filter(Boolean);
+      lines.forEach(line => { state = addTodo(state, line, targetCol); });
+      saveState(state);
+
+      // Clean the URL without reloading (removes ?add=...&col=...)
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+
+    // ─── Boot ─────────────────────────────────────────────────────
+    let state = loadState();
+    processUrlInbox();
+    render(state);
+  </script>
+
+</body>
+</html>
